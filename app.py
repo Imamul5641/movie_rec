@@ -4,12 +4,12 @@ import pandas as pd
 import requests
 import gzip
 
-
+API_KEY=st.secrets["key"]
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def fetch_poster(movie_id):
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={st.secrets["key"]}&language=en-US"
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={API_KEY}&language=en-US"
     data = requests.get(url)
     data = data.json()
     poster_path = data['poster_path']
