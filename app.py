@@ -8,13 +8,17 @@ API_KEY=st.secrets["key"]
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-def fetch_poster(movie_id):
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={API_KEY}&language=en-US"
-    data = requests.get(url)
-    data = data.json()
-    poster_path = data['poster_path']
-    full_path = "https://image.tmdb.org/t/p/w500/" + poster_path
-    return full_path
+def fetch_poster(movie_name):
+    search_url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={movie_name}"
+
+    response = requests.get(search_url)
+    data = response.json()
+
+    if 'Poster' in data and data['Poster'] != 'N/A':
+        return data['Poster']
+    else:
+        return "No poster found for this movie"
+
 def recommend(movie):
     index = movies[movies['title'] == movie].index[0]
     distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
@@ -25,9 +29,10 @@ def recommend(movie):
         recommended_movie_names.append(movies.iloc[i[0]].title)
 
         # fetch the movie poster
-        recommended_movie_posters.append(fetch_poster(movie_id))
+        recommended_movie_posters.append(fetch_poster(movies.iloc[i[0]].title))
     # return recommended_movie_names
     return recommended_movie_names,recommended_movie_posters
+
 
 
 # Specify the path to your compressed pickle file
